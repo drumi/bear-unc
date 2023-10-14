@@ -1,0 +1,21 @@
+name: Deploy
+on:
+  push:
+    branches: 
+      - 'release-*'
+
+jobs:
+  deliver:
+    name: Deliver to docker repo
+    uses: ./.github/workflows/deliver.yml
+    
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-18.04
+    needs: [deliver]
+    steps:
+      - name: Deploy
+        env:
+          WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+        run: curl "$WEBHOOK_URL"
+
