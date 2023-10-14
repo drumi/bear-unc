@@ -8,6 +8,7 @@ jobs:
   deliver:
     name: Deliver to docker repo
     uses: ./.github/workflows/deliver.yml
+    secrets: inherit
     
   deploy:
     name: Deploy
