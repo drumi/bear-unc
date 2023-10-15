@@ -5,7 +5,7 @@ const stompClient = new StompJs.Client({
 stompClient.onConnect = (frame) => {
     console.log('Connected: ' + frame);
     stompClient.subscribe('/topic/messages', (message) => {
-        console.log(JSON.parse(message.body).message)
+        onReceivedMessage(JSON.parse(message.body))
     });
 };
 
@@ -18,19 +18,55 @@ stompClient.onStompError = (frame) => {
     console.error('Additional details: ' + frame.body);
 };
 
-function sendName() {
+function sendMessage(event) {
+    event.preventDefault();
+
+    const textArea = document.getElementById("message-input");
+    const message = textArea.value;
+    textArea.value = "";
+
+    if (message === null || message.trim().length === 0) {
+        return;
+    }
+
     stompClient.publish({
-        destination: "/app/message",
+        destination: "/send/message",
         body: JSON.stringify({
-            message: "123"
+            message: message
         })
     });
+
+    console.log('Sended: ' + message);
 }
 
-function sendMessage() {
-    stompClient.publish(
-        JSON.stringify({
-            message: document.getElementById("message").textContent
-        })
-    )
+function onReceivedMessage(message) {
+    const value = message.message;
+
+    if (!value) {
+        return;
+    }
+
+    const el = document.createElement("div");
+
+    el.innerText = value;
+    el.classList.add("message", "appear");
+    document.getElementById("messages").prepend(el);
+
+    console.log('Received: ' + value);
+}
+
+function submitOnEnter(event) {
+    if (event.which === 13  && !event.shiftKey) {
+        if (!event.repeat) {
+            const newEvent = new Event("submit", {cancelable: true});
+            event.target.form.dispatchEvent(newEvent);
+        }
+
+        event.preventDefault();
+    }
+}
+
+window.onload = (e) => {
+    document.getElementById("message-input").addEventListener("keydown", submitOnEnter);
+    stompClient.activate();
 }
