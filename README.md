@@ -1,4 +1,4 @@
-# Bear Unprotected Network Channel
+# Bear Underground Network Channel
 Basic spring websocket chat with basic containerization and basic CI/CD pipeline deployed via webhooks on cloud vm
 
 https://bear-unc.andreyprodromov.com
